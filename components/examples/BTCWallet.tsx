@@ -522,13 +522,7 @@ export default function BTCWallet() {
             <RowSpaceBetween>
               <Text>Price</Text>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1ch' }}>
-                <Badge
-                  style={{
-                    color: walletData.priceChange >= 0 ? 'var(--theme-success)' : 'var(--theme-error)',
-                  }}
-                >
-                  {formatPercentage(walletData.priceChange)}%
-                </Badge>
+                <Badge>{formatPercentage(walletData.priceChange)}%</Badge>
                 <Text>{getBTCPrice()}</Text>
               </div>
             </RowSpaceBetween>
@@ -539,10 +533,10 @@ export default function BTCWallet() {
           {settings.walletAddress ? (
             <Card title="Recent Transactions">
               <RowSpaceBetween>
-                <Text>LAST UPDATE</Text>
+                <Text>LAST UPDATED</Text>
                 <div style={{ display: 'flex', gap: '1ch', alignItems: 'center' }}>
                   <Badge>{dataSource === 'cache' ? 'CACHED' : 'FRESH'}</Badge>
-                  <Badge>{new Date(walletData.lastUpdated).toLocaleString('de-DE', { hour12: false })}</Badge>
+                  <Badge>{new Date(walletData.lastUpdated).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</Badge>
                 </div>
               </RowSpaceBetween>
               <Table>
@@ -576,13 +570,7 @@ export default function BTCWallet() {
                             year: '2-digit',
                           })}
                         </TableColumn>
-                        <TableColumn
-                          style={{
-                            color: tx.tx_input_n === -1 ? 'var(--theme-success)' : 'var(--theme-error)',
-                          }}
-                        >
-                          {tx.tx_input_n === -1 ? '↓ IN' : '↑ OUT'}
-                        </TableColumn>
+                        <TableColumn>{tx.tx_input_n === -1 ? '↓ IN' : '↑ OUT'}</TableColumn>
                         <TableColumn>{formatValue(satsFormatted, settings.hideValues)}</TableColumn>
                       </TableRow>
                     </ModalTrigger>

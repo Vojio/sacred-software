@@ -136,38 +136,8 @@ const DefaultActionBar: React.FC<DefaultActionBarProps> = ({ items = [] }) => {
               },
               {
                 icon: '⊹',
-                children: 'Commit Mono V143 [OFL]',
-                onClick: () => Utilities.onHandleFontChange('font-use-commit-mono'),
-              },
-              {
-                icon: '⊹',
-                children: 'Fira Code [OFL]',
-                onClick: () => Utilities.onHandleFontChange('font-use-fira-code'),
-              },
-              {
-                icon: '⊹',
-                children: 'Fragment Mono [OFL]',
-                onClick: () => Utilities.onHandleFontChange('font-use-fragment-mono'),
-              },
-              {
-                icon: '⊹',
                 children: 'Geist Mono [OFL]',
                 onClick: () => Utilities.onHandleFontChange('font-use-geist-mono'),
-              },
-              {
-                icon: '⊹',
-                children: 'Iosevka Term [OFL]',
-                onClick: () => Utilities.onHandleFontChange('font-use-iosevka-term'),
-              },
-              {
-                icon: '⊹',
-                children: 'JetBrains Mono [OFL]',
-                onClick: () => Utilities.onHandleFontChange('font-use-jet-brains-mono'),
-              },
-              {
-                icon: '⊹',
-                children: 'SFMono Square [FOSS]',
-                onClick: () => Utilities.onHandleFontChange('font-use-sfmono-square'),
               },
               {
                 icon: '⊹',
@@ -193,7 +163,8 @@ const DefaultActionBar: React.FC<DefaultActionBarProps> = ({ items = [] }) => {
               },
               {
                 icon: '⊹',
-                children: 'Oranges In Wintergarden',
+                //This one has dark/light mode
+                children: 'Oranges In Wintergarden [AUTO]',
                 onClick: () => Utilities.onHandleThemeChange('theme-orange'),
               },
               {

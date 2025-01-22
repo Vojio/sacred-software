@@ -347,6 +347,43 @@ export default function BTCWallet() {
   };
 
   // Utility Functions
+  const formatTimeAgo = (dateString: string): string => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.round((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds} second${diffInSeconds !== 1 ? 's' : ''} ago`;
+    }
+
+    const diffInMinutes = Math.round(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''} ago`;
+    }
+
+    const diffInHours = Math.round(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''} ago`;
+    }
+
+    const diffInDays = Math.round(diffInHours / 24);
+    if (diffInDays < 7) {
+      return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
+    }
+
+    const diffInWeeks = Math.round(diffInDays / 7);
+    if (diffInWeeks < 4) {
+      return `${diffInWeeks} week${diffInWeeks !== 1 ? 's' : ''} ago`;
+    }
+
+    const diffInMonths = Math.round(diffInDays / 30);
+    if (diffInMonths < 12) {
+      return `${diffInMonths} month${diffInMonths !== 1 ? 's' : ''} ago`;
+    }
+
+    const diffInYears = Math.round(diffInDays / 365);
+    return `${diffInYears} year${diffInYears !== 1 ? 's' : ''} ago`;
+  };
 
   const formatPercentage = (value: number): string => {
     return `${value >= 0 ? '+' : ''}${value.toFixed(2)}`;
@@ -541,12 +578,11 @@ export default function BTCWallet() {
               </RowSpaceBetween>
               <Table>
                 <TableRow>
-                  <TableColumn>DATE</TableColumn>
+                  <TableColumn>TIME</TableColumn>
                   <TableColumn>TYPE</TableColumn>
-                  <TableColumn>AMOUNT</TableColumn>
+                  <TableColumn>SATS</TableColumn>
                 </TableRow>
                 {walletData.transactions.slice(0, 3).map((tx, i) => {
-                  const value = settings.currency === 'EUR' ? (tx.value / 100000000) * walletData.btcPriceEUR : (tx.value / 100000000) * walletData.btcPrice;
                   const satsFormatted = formatNumber(tx.value, 0);
 
                   return (
@@ -563,13 +599,7 @@ export default function BTCWallet() {
                       }}
                     >
                       <TableRow style={{ cursor: 'pointer' }}>
-                        <TableColumn>
-                          {new Date(tx.confirmed).toLocaleDateString('de-DE', {
-                            month: 'numeric',
-                            day: 'numeric',
-                            year: '2-digit',
-                          })}
-                        </TableColumn>
+                        <TableColumn>{formatTimeAgo(tx.confirmed)}</TableColumn>
                         <TableColumn>{tx.tx_input_n === -1 ? '↓ IN' : '↑ OUT'}</TableColumn>
                         <TableColumn>{formatValue(satsFormatted, settings.hideValues)}</TableColumn>
                       </TableRow>
@@ -586,8 +616,8 @@ export default function BTCWallet() {
 
           <br />
 
-          <Card title="Sats Converter">
-            <Input value={satsAmount} onChange={handleSatsInputChange} placeholder="e.g. 21000" label="Amount in Satoshis" autoComplete="off" style={{ width: '100%', maxWidth: '42ch', marginBottom: '1ch' }} />
+          <Card title="Converter">
+            <Input value={satsAmount} onChange={handleSatsInputChange} placeholder="Enter amount" label="Amount in Satoshis" autoComplete="off" style={{ width: '100%', maxWidth: '42ch', marginBottom: '1ch' }} />
             <RowSpaceBetween>
               <Text>USD Value</Text>
               <Text>{convertedUSD ? `$${convertedUSD}` : '--'}</Text>

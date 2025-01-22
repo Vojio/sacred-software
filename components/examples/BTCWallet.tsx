@@ -125,8 +125,6 @@ export default function BTCWallet() {
   const [dataSource, setDataSource] = React.useState<'cache' | 'fresh'>('fresh');
 
   // Form States
-  const [newWalletName, setNewWalletName] = React.useState('');
-  const [newWalletAddress, setNewWalletAddress] = React.useState('');
   const [editWallet, setEditWallet] = React.useState<Wallet | null>(null);
 
   // Persisted States
@@ -272,20 +270,20 @@ export default function BTCWallet() {
     }
   }, [settings.walletAddress]);
 
-  const handleAddWalletModal = () => {
-    if (!newWalletAddress || !newWalletName) {
+  const handleAddWalletModal = (name: string, address: string) => {
+    if (!address || !name) {
       setError('Missing wallet name or address');
       return;
     }
-    if (!validateBTCAddress(newWalletAddress)) {
+    if (!validateBTCAddress(address)) {
       setError('Invalid BTC address format');
       return;
     }
 
     const newWallet: Wallet = {
       id: String(Date.now()),
-      name: newWalletName || 'Main',
-      address: newWalletAddress,
+      name: name || 'Main',
+      address: address,
     };
 
     const updatedWallets = [...wallets, newWallet];
@@ -293,8 +291,6 @@ export default function BTCWallet() {
     if (typeof window !== 'undefined') {
       localStorage.setItem(WALLETS_KEY, JSON.stringify(updatedWallets));
     }
-    setNewWalletName('');
-    setNewWalletAddress('');
     selectWallet(newWallet);
   };
 

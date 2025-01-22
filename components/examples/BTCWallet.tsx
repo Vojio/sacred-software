@@ -229,7 +229,7 @@ export default function BTCWallet() {
     const cachedData = walletDataCacheRef.current[settings.walletAddress];
     if (cachedData) {
       const isCacheFresh = Date.now() - cachedData.lastUpdated < CACHE_DURATION;
-      if (isCacheFresh && cachedData.balance !== undefined) {
+      if (isCacheFresh && cachedData.balance !== undefined && cachedData.btcPrice !== undefined && cachedData.btcPriceEUR !== undefined) {
         setWalletData(cachedData);
         setDataSource('cache');
         return;
@@ -241,10 +241,11 @@ export default function BTCWallet() {
 
     try {
       const { balance, transactions } = await fetchWalletDataWithFallback(settings.walletAddress);
+      const priceData = await fetchPriceWithFallback();
 
       setWalletData((prev) => {
-        const usdValue = balance * prev.btcPrice;
-        const eurValue = balance * prev.btcPriceEUR;
+        const usdValue = balance * priceData.btcPrice;
+        const eurValue = balance * priceData.btcPriceEUR;
 
         const newData = {
           ...prev,
@@ -252,6 +253,9 @@ export default function BTCWallet() {
           usdValue,
           eurValue,
           transactions,
+          btcPrice: priceData.btcPrice,
+          btcPriceEUR: priceData.btcPriceEUR,
+          priceChange: priceData.priceChange,
           lastUpdated: Date.now(),
         };
 

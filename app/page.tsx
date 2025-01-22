@@ -30,9 +30,7 @@ export default function Page() {
     <DefaultLayout previewPixelSRC="https://intdev-global.s3.us-west-2.amazonaws.com/template-app-icon.png">
       <Grid>
         <br />
-        <Row>
-          {Package.name.toUpperCase()} <Badge>{Package.version}</Badge>
-        </Row>
+        <Row>{Package.name.toUpperCase()}</Row>
         <Row>{Package.description}</Row>
         <br />
         <CardDouble title="Wallet Monitor">

@@ -168,7 +168,7 @@ export default function BTCWallet() {
           setIsRefreshing(true);
           Promise.all([fetchBTCPrice(), fetchWalletData()]).finally(() => setIsRefreshing(false));
         }
-      }, 60000);
+      }, 300000);
 
       return () => {
         clearInterval(interval);
@@ -510,7 +510,7 @@ export default function BTCWallet() {
             <Row>
               <Text>Auto Refresh</Text>
               <Checkbox name="autoRefresh" defaultChecked={pendingSettings.autoRefresh} onChange={(e) => handleUpdatePendingSettings({ autoRefresh: e.target.checked })}>
-                Auto refresh (60s)
+                Auto refresh (5min)
               </Checkbox>
             </Row>
             <Row>

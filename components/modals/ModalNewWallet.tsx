@@ -1,10 +1,11 @@
 import styles from './ModalNewWallet.module.scss';
 import * as React from 'react';
-import Button from '@components/Button';
 import Input from '@components/Input';
 import { useModals } from '@components/page/ModalContext';
 import Text from '@components/Text';
 import Divider from '@components/Divider';
+import ActionBar from '@components/ActionBar';
+import ActionButton from '@components/ActionButton';
 
 interface ModalNewWalletProps {
   buttonText?: string;
@@ -30,13 +31,19 @@ const ModalNewWallet: React.FC<ModalNewWalletProps> = ({ buttonText = 'Close', o
       <Divider style={{ marginBottom: '2ch' }} />
       <Input label="Wallet name" name="wallet-name" value={newWalletName} onChange={(e) => setNewWalletName(e.target.value)} placeholder="e.g.: Yachting" style={{ marginBottom: '1ch' }} />
       <Input label="BTC address" name="wallet-address" value={newWalletAddress} onChange={(e) => setNewWalletAddress(e.target.value)} placeholder="bc1q.., 3.., 1.., bc1p.." style={{ marginBottom: '2ch' }} />
-      <Button onClick={handleAddWallet} theme="SECONDARY" style={{ marginBottom: '1ch', width: '100%' }}>
-        Add Wallet
-      </Button>
-      <Divider style={{ marginBottom: '1ch' }} />
-      <Button onClick={() => close()} theme="SECONDARY" style={{ width: '100%' }}>
-        {buttonText}
-      </Button>
+      <br />
+      <ActionBar
+        items={[
+          {
+            body: 'Add Wallet',
+            onClick: handleAddWallet,
+          },
+          {
+            body: buttonText,
+            onClick: () => close(),
+          },
+        ]}
+      />
     </div>
   );
 };

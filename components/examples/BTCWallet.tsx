@@ -546,7 +546,6 @@ export default function BTCWallet() {
                   <TableColumn>DATE</TableColumn>
                   <TableColumn>TYPE</TableColumn>
                   <TableColumn>AMOUNT</TableColumn>
-                  <TableColumn>VALUE</TableColumn>
                 </TableRow>
                 {walletData.transactions.slice(0, 3).map((tx, i) => {
                   const value = settings.currency === 'EUR' ? (tx.value / 100000000) * walletData.btcPriceEUR : (tx.value / 100000000) * walletData.btcPrice;
@@ -581,7 +580,6 @@ export default function BTCWallet() {
                           {tx.tx_input_n === -1 ? '↓ IN' : '↑ OUT'}
                         </TableColumn>
                         <TableColumn>{formatValue(satsFormatted, settings.hideValues)}</TableColumn>
-                        <TableColumn>{settings.hideValues ? '****' : settings.currency === 'USD' ? `$${formatCurrencyValue(value)}` : `€${formatCurrencyValue(value)}`}</TableColumn>
                       </TableRow>
                     </ModalTrigger>
                   );

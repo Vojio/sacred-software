@@ -10,7 +10,9 @@ import { useModals } from '@components/page/ModalContext';
 import Button from '@components/Button';
 import Card from '@components/Card';
 import Text from '@components/Text';
-import RowSpaceBetween from '@components/RowSpaceBetween';
+import Table from '@components/Table';
+import TableRow from '@components/TableRow';
+import TableColumn from '@components/TableColumn';
 import Divider from '@components/Divider';
 
 interface ModalTransactionProps {
@@ -28,14 +30,14 @@ interface ModalTransactionProps {
 }
 
 const formatNumber = (value: number, minimumFractionDigits = 2, maximumFractionDigits = 8): string => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('de-DE', {
     minimumFractionDigits,
     maximumFractionDigits,
   }).format(value);
 };
 
 const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('de-DE', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
@@ -53,45 +55,79 @@ function ModalTransaction({ buttonText, transaction, btcPrice, btcPriceEUR, curr
 
   const value = currency === 'EUR' ? (transaction.value / 100000000) * btcPriceEUR : (transaction.value / 100000000) * btcPrice;
   const btcAmount = transaction.value / 100000000;
+  const date = new Date(transaction.confirmed);
 
   return (
     <div className={styles.root}>
       <Card title="Transaction Details">
-        <RowSpaceBetween>
-          <Text>Type</Text>
-          <Text
-            style={{
-              color: transaction.tx_input_n === -1 ? 'var(--theme-success)' : 'var(--theme-error)',
-            }}
-          >
-            {transaction.tx_input_n === -1 ? 'Incoming' : 'Outgoing'}
-          </Text>
-        </RowSpaceBetween>
+        <Table>
+          <TableRow>
+            <TableColumn>
+              <Text>Type</Text>
+            </TableColumn>
+            <TableColumn>
+              <Text
+                style={{
+                  color: transaction.tx_input_n === -1 ? 'var(--theme-success)' : 'var(--theme-error)',
+                }}
+              >
+                {transaction.tx_input_n === -1 ? 'Incoming' : 'Outgoing'}
+              </Text>
+            </TableColumn>
+          </TableRow>
 
-        <RowSpaceBetween>
-          <Text>Date</Text>
-          <Text>
-            {new Date(transaction.confirmed).toLocaleString('de-DE', {
-              dateStyle: 'medium',
-              timeStyle: 'short',
-            })}
-          </Text>
-        </RowSpaceBetween>
+          <TableRow>
+            <TableColumn>
+              <Text>Date</Text>
+            </TableColumn>
+            <TableColumn>
+              <Text>
+                {date.toLocaleString('de-DE', {
+                  dateStyle: 'medium',
+                })}
+              </Text>
+            </TableColumn>
+          </TableRow>
+          <TableRow>
+            <TableColumn>
+              <Text>Time</Text>
+            </TableColumn>
+            <TableColumn>
+              <Text>
+                {date.toLocaleString('de-DE', {
+                  timeStyle: 'short',
+                })}
+              </Text>
+            </TableColumn>
+          </TableRow>
 
-        <RowSpaceBetween>
-          <Text>Amount (sats)</Text>
-          <Text>{formatValue(formatNumber(transaction.value, 0), hideValues)}</Text>
-        </RowSpaceBetween>
+          <TableRow>
+            <TableColumn>
+              <Text>Sats</Text>
+            </TableColumn>
+            <TableColumn>
+              <Text>{formatValue(formatNumber(transaction.value, 0), hideValues)}</Text>
+            </TableColumn>
+          </TableRow>
 
-        <RowSpaceBetween>
-          <Text>Amount (BTC)</Text>
-          <Text>{formatValue(btcAmount.toFixed(8), hideValues)}</Text>
-        </RowSpaceBetween>
+          <TableRow>
+            <TableColumn>
+              <Text>BTC</Text>
+            </TableColumn>
+            <TableColumn>
+              <Text>₿{formatValue(btcAmount.toFixed(8), hideValues)}</Text>
+            </TableColumn>
+          </TableRow>
 
-        <RowSpaceBetween>
-          <Text>Value ({currency})</Text>
-          <Text>{hideValues ? '****' : currency === 'USD' ? `$${formatCurrency(value)}` : `€${formatCurrency(value)}`}</Text>
-        </RowSpaceBetween>
+          <TableRow>
+            <TableColumn>
+              <Text>Value</Text>
+            </TableColumn>
+            <TableColumn>
+              <Text>{hideValues ? '****' : currency === 'USD' ? `$${formatCurrency(value)}` : `€${formatCurrency(value)}`}</Text>
+            </TableColumn>
+          </TableRow>
+        </Table>
 
         {transaction.hash && (
           <>

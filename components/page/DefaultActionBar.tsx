@@ -126,18 +126,18 @@ const DefaultActionBar: React.FC<DefaultActionBarProps> = ({ items = [] }) => {
         items={[
           {
             hotkey: '⌃+O',
-            body: 'Fonts',
+            body: 'Font',
             openHotkey: 'ctrl+o',
             items: [
               {
                 icon: '⊹',
-                children: 'Commit Mono V143 [OFL]',
-                onClick: () => Utilities.onHandleFontChange('font-use-commit-mono'),
+                children: 'Departure Mono [MIT] [DEFAULT]',
+                onClick: () => Utilities.onHandleFontChange(''),
               },
               {
                 icon: '⊹',
-                children: 'Departure Mono [MIT]',
-                onClick: () => Utilities.onHandleFontChange('font-use-departure-mono'),
+                children: 'Commit Mono V143 [OFL]',
+                onClick: () => Utilities.onHandleFontChange('font-use-commit-mono'),
               },
               {
                 icon: '⊹',
@@ -151,8 +151,8 @@ const DefaultActionBar: React.FC<DefaultActionBarProps> = ({ items = [] }) => {
               },
               {
                 icon: '⊹',
-                children: 'Geist Mono [OFL] [DEFAULT]',
-                onClick: () => Utilities.onHandleFontChange(''),
+                children: 'Geist Mono [OFL]',
+                onClick: () => Utilities.onHandleFontChange('font-use-geist-mono'),
               },
               {
                 icon: '⊹',
@@ -186,6 +186,11 @@ const DefaultActionBar: React.FC<DefaultActionBarProps> = ({ items = [] }) => {
             body: 'Theme',
             openHotkey: 'ctrl+t',
             items: [
+              {
+                icon: '⊹',
+                children: 'Pink Bikini [DEFAULT]',
+                onClick: () => Utilities.onHandleThemeChange('theme-black-pink'),
+              },
               {
                 icon: '⊹',
                 children: 'Refined White [DEFAULT]',

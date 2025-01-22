@@ -203,6 +203,23 @@ section {
   display: block;
 }
 
+body.theme-black-pink {
+  --theme-overlay: color(display-p3 1 0.396 0.835 / 0.337); //6 alpha
+  --theme-background: color(display-p3 0.093 0.068 0.089); //1
+  --theme-background-modal: color(display-p3 0.121 0.073 0.11); //2
+  --theme-background-modal-footer: color(display-p3 0.198 0.098 0.179); //3
+  --theme-background-input: color(display-p3 0.093 0.068 0.089); //1
+  --theme-border: color(display-p3 0.382 0.177 0.326); //6
+  --theme-border-subdued: color(display-p3 1 0.294 0.886 / 0.139); //3 alpha
+  --theme-text: color(display-p3 1 0.535 0.78); //11 BODY
+  --theme-button: color(display-p3 0.775 0.297 0.61); //9 PRIMARY
+  --theme-button-text: color(display-p3 0.964 0.826 0.912); //12 PRIMARY TEXT
+  --theme-button-foreground: color(display-p3 0.271 0.095 0.231); //4
+  --theme-button-background: color(display-p3 0.198 0.098 0.179); //3 ACTION BUTTON, ACTION LIST ITEM,
+  --theme-focused-foreground: color(display-p3 0.32 0.127 0.273); //4 HOVER, ACTIVE, FOCUS
+  --theme-focused-foreground-subdued: color(display-p3 1 0.192 0.82 / 0.219); // 5 HOVER, ACTIVE, FOCUS SUBDUED
+}
+
 body.theme-blue {
   --theme-overlay: var(--color-blue-20-5);
   --theme-background: var(--color-blue-80);
@@ -320,6 +337,10 @@ body.theme-black-green {
   --theme-button-background: var(--color-green-90);
   --theme-focused-foreground: var(--color-gray-30);
   --theme-focused-foreground-subdued: var(--color-gray-40);
+}
+
+body.font-use-geist-mono {
+  --font-family-mono: 'GeistMono-Regular', sans-serif;
 }
 
 body.font-use-berkeley-mono {
@@ -496,7 +517,7 @@ body {
   --color-white-4: rgba(255, 255, 255, 0.4);
 
   --font-family: -apple-system, BlinkMacSystemFont, helvetica neue, helvetica, sans-serif;
-  --font-family-mono: 'GeistMono-Regular', Consolas, monaco, monospace;
+  --font-family-mono: 'DepartureMono-Regular', Consolas, monaco, monospace;
   --font-family-serif: Georgia, Times New Roman, serif;
 
   --theme-text: var(--color-black-100);

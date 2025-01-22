@@ -25,6 +25,8 @@ import TableRow from '@components/TableRow';
 import TableColumn from '@components/TableColumn';
 import Dialog from '@components/Dialog';
 import ModalTrigger from '@components/ModalTrigger';
+import ModalTransaction from '@components/modals/ModalTransaction';
+import ModalStack from '@components/ModalStack';
 
 // Constants
 const STORAGE_KEY = 'btc-wallet-data';
@@ -65,52 +67,28 @@ interface WalletData {
   lastUpdated: number;
 }
 
-interface TransactionModalProps {
-  transaction: Transaction;
-  onClose: () => void;
-  btcPrice: number;
-  btcPriceEUR: number;
-  currency: 'USD' | 'EUR';
-  hideValues: boolean;
-}
+const formatNumber = (value: number | string, minimumFractionDigits = 2, maximumFractionDigits = 8): string => {
+  const numValue = typeof value === 'string' ? Number.parseFloat(value) : value;
+  if (Number.isNaN(numValue)) return '0';
 
-const TransactionModal: React.FC<TransactionModalProps> = ({ transaction, onClose, btcPrice, btcPriceEUR, currency, hideValues }) => {
-  const value = currency === 'EUR' ? (transaction.value / 100000000) * btcPriceEUR : (transaction.value / 100000000) * btcPrice;
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits,
+    maximumFractionDigits: Math.min(maximumFractionDigits, 20),
+  }).format(numValue);
+};
 
-  return (
-    <Dialog>
-      <Card title={`Transaction Details`}>
-        <RowSpaceBetween>
-          <Text>Hash</Text>
-          <Text style={{ wordBreak: 'break-all' }}>{transaction.hash || 'Unknown'}</Text>
-        </RowSpaceBetween>
-        <RowSpaceBetween>
-          <Text>Date</Text>
-          <Text>{new Date(transaction.confirmed).toLocaleString('de-DE', { hour12: false })}</Text>
-        </RowSpaceBetween>
-        <RowSpaceBetween>
-          <Text>Type</Text>
-          <Text style={{ color: transaction.tx_input_n === -1 ? 'var(--theme-success)' : 'var(--theme-error)' }}>{transaction.tx_input_n === -1 ? 'Incoming' : 'Outgoing'}</Text>
-        </RowSpaceBetween>
-        <RowSpaceBetween>
-          <Text>Amount</Text>
-          <Text>{formatValue(formatNumber(transaction.value, 0), hideValues)} sats</Text>
-        </RowSpaceBetween>
-        <RowSpaceBetween>
-          <Text>BTC</Text>
-          <Text>{formatValue((transaction.value / 100000000).toFixed(8), hideValues)} BTC</Text>
-        </RowSpaceBetween>
-        <RowSpaceBetween>
-          <Text>Value</Text>
-          <Text>{currency === 'USD' ? `$${formatCurrency(value)}` : `€${formatCurrency(value)}`}</Text>
-        </RowSpaceBetween>
-        <br />
-        <Button onClick={onClose} theme="SECONDARY">
-          Close
-        </Button>
-      </Card>
-    </Dialog>
-  );
+const formatCurrency = (value: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+};
+
+const formatValue = (value: number | string, hideValues: boolean, isCurrency = false) => {
+  if (hideValues) {
+    return isCurrency ? '****' : '********';
+  }
+  return typeof value === 'number' ? formatNumber(value, value < 1 ? 8 : 2) : value;
 };
 
 const defaultSettings: Settings = {
@@ -140,16 +118,6 @@ const BTC_ADDRESS_REGEX = {
 
 const validateBTCAddress = (address: string): boolean => {
   return BTC_ADDRESS_REGEX.LEGACY.test(address) || BTC_ADDRESS_REGEX.SEGWIT.test(address) || BTC_ADDRESS_REGEX.NATIVE_SEGWIT.test(address) || BTC_ADDRESS_REGEX.TAPROOT.test(address);
-};
-
-const formatNumber = (value: number | string, minimumFractionDigits = 2, maximumFractionDigits = 8): string => {
-  const numValue = typeof value === 'string' ? Number.parseFloat(value) : value;
-  if (Number.isNaN(numValue)) return '0';
-
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits,
-    maximumFractionDigits: Math.min(maximumFractionDigits, 20),
-  }).format(numValue);
 };
 
 export default function BTCWallet() {
@@ -384,13 +352,6 @@ export default function BTCWallet() {
     return currentWallet?.name || 'Main';
   };
 
-  const formatValue = (value: number | string, hideValues: boolean, isCurrency = false) => {
-    if (hideValues) {
-      return isCurrency ? '****' : '********';
-    }
-    return typeof value === 'number' ? formatNumber(value, value < 1 ? 8 : 2) : value;
-  };
-
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
@@ -540,7 +501,7 @@ export default function BTCWallet() {
           <Card title="Wallet Overview">
             <RowSpaceBetween>
               <Text>Balance</Text>
-              <Text>{!settings.walletAddress ? '--' : formatValue(walletData.balance, true)} BTC</Text>
+              <Text>₿{!settings.walletAddress ? '--' : formatValue(walletData.balance, settings.hideValues)}</Text>{' '}
             </RowSpaceBetween>
             <RowSpaceBetween>
               <Text>Value</Text>
@@ -581,24 +542,37 @@ export default function BTCWallet() {
                   const satsFormatted = formatNumber(tx.value, 0);
 
                   return (
-                    <TableRow key={tx.hash || i}>
-                      <TableColumn>
-                        {new Date(tx.confirmed).toLocaleDateString('de-DE', {
-                          month: 'numeric',
-                          day: 'numeric',
-                          year: '2-digit',
-                        })}
-                      </TableColumn>
-                      <TableColumn
-                        style={{
-                          color: tx.tx_input_n === -1 ? 'var(--theme-success)' : 'var(--theme-error)',
-                        }}
-                      >
-                        {tx.tx_input_n === -1 ? '↓ IN' : '↑ OUT'}
-                      </TableColumn>
-                      <TableColumn>{formatValue(satsFormatted, settings.hideValues)}</TableColumn>
-                      <TableColumn>{settings.hideValues ? '****' : settings.currency === 'USD' ? `$${formatCurrency(value)}` : `€${formatCurrency(value)}`}</TableColumn>
-                    </TableRow>
+                    <ModalTrigger
+                      key={tx.hash || i}
+                      modal={ModalTransaction}
+                      modalProps={{
+                        transaction: tx,
+                        btcPrice: walletData.btcPrice,
+                        btcPriceEUR: walletData.btcPriceEUR,
+                        currency: settings.currency,
+                        hideValues: settings.hideValues,
+                        buttonText: 'Close',
+                      }}
+                    >
+                      <TableRow style={{ cursor: 'pointer' }}>
+                        <TableColumn>
+                          {new Date(tx.confirmed).toLocaleDateString('de-DE', {
+                            month: 'numeric',
+                            day: 'numeric',
+                            year: '2-digit',
+                          })}
+                        </TableColumn>
+                        <TableColumn
+                          style={{
+                            color: tx.tx_input_n === -1 ? 'var(--theme-success)' : 'var(--theme-error)',
+                          }}
+                        >
+                          {tx.tx_input_n === -1 ? '↓ IN' : '↑ OUT'}
+                        </TableColumn>
+                        <TableColumn>{formatValue(satsFormatted, settings.hideValues)}</TableColumn>
+                        <TableColumn>{settings.hideValues ? '****' : settings.currency === 'USD' ? `$${formatCurrency(value)}` : `€${formatCurrency(value)}`}</TableColumn>
+                      </TableRow>
+                    </ModalTrigger>
                   );
                 })}
               </Table>
@@ -612,7 +586,7 @@ export default function BTCWallet() {
           <br />
 
           <Card title="Sats Converter">
-            <Input value={satsAmount} onChange={handleSatsInputChange} placeholder="Enter amount in sats" label="Amount in Satoshis" autoComplete="off" isBlinking={true} style={{ width: '100%', maxWidth: '42ch', marginBottom: '1ch' }} />
+            <Input value={satsAmount} onChange={handleSatsInputChange} placeholder="Enter amount in sats" label="Amount in Satoshis" autoComplete="off" style={{ width: '100%', maxWidth: '42ch', marginBottom: '1ch' }} />
             <RowSpaceBetween>
               <Text>USD Value</Text>
               <Text>{convertedUSD ? `$${convertedUSD}` : '--'}</Text>
@@ -638,6 +612,7 @@ export default function BTCWallet() {
           </Button>
         </>
       )}
+      <ModalStack />
     </>
   );
 }

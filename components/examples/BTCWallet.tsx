@@ -20,6 +20,11 @@ import Row from '@components/Row';
 import Checkbox from '@components/Checkbox';
 import ButtonGroup from '@components/ButtonGroup';
 import Grid from '@components/Grid';
+import Table from '@components/Table';
+import TableRow from '@components/TableRow';
+import TableColumn from '@components/TableColumn';
+import Dialog from '@components/Dialog';
+import ModalTrigger from '@components/ModalTrigger';
 
 // Constants
 const STORAGE_KEY = 'btc-wallet-data';
@@ -59,6 +64,54 @@ interface WalletData {
   transactions: Transaction[];
   lastUpdated: number;
 }
+
+interface TransactionModalProps {
+  transaction: Transaction;
+  onClose: () => void;
+  btcPrice: number;
+  btcPriceEUR: number;
+  currency: 'USD' | 'EUR';
+  hideValues: boolean;
+}
+
+const TransactionModal: React.FC<TransactionModalProps> = ({ transaction, onClose, btcPrice, btcPriceEUR, currency, hideValues }) => {
+  const value = currency === 'EUR' ? (transaction.value / 100000000) * btcPriceEUR : (transaction.value / 100000000) * btcPrice;
+
+  return (
+    <Dialog>
+      <Card title={`Transaction Details`}>
+        <RowSpaceBetween>
+          <Text>Hash</Text>
+          <Text style={{ wordBreak: 'break-all' }}>{transaction.hash || 'Unknown'}</Text>
+        </RowSpaceBetween>
+        <RowSpaceBetween>
+          <Text>Date</Text>
+          <Text>{new Date(transaction.confirmed).toLocaleString('de-DE', { hour12: false })}</Text>
+        </RowSpaceBetween>
+        <RowSpaceBetween>
+          <Text>Type</Text>
+          <Text style={{ color: transaction.tx_input_n === -1 ? 'var(--theme-success)' : 'var(--theme-error)' }}>{transaction.tx_input_n === -1 ? 'Incoming' : 'Outgoing'}</Text>
+        </RowSpaceBetween>
+        <RowSpaceBetween>
+          <Text>Amount</Text>
+          <Text>{formatValue(formatNumber(transaction.value, 0), hideValues)} sats</Text>
+        </RowSpaceBetween>
+        <RowSpaceBetween>
+          <Text>BTC</Text>
+          <Text>{formatValue((transaction.value / 100000000).toFixed(8), hideValues)} BTC</Text>
+        </RowSpaceBetween>
+        <RowSpaceBetween>
+          <Text>Value</Text>
+          <Text>{currency === 'USD' ? `$${formatCurrency(value)}` : `€${formatCurrency(value)}`}</Text>
+        </RowSpaceBetween>
+        <br />
+        <Button onClick={onClose} theme="SECONDARY">
+          Close
+        </Button>
+      </Card>
+    </Dialog>
+  );
+};
 
 const defaultSettings: Settings = {
   walletAddress: '',
@@ -331,15 +384,24 @@ export default function BTCWallet() {
     return currentWallet?.name || 'Main';
   };
 
-  const formatValue = (value: number | string, isBTCValue = false) => {
-    if (settings.hideValues && isBTCValue) return '********';
+  const formatValue = (value: number | string, hideValues: boolean, isCurrency = false) => {
+    if (hideValues) {
+      return isCurrency ? '****' : '********';
+    }
     return typeof value === 'number' ? formatNumber(value, value < 1 ? 8 : 2) : value;
+  };
+
+  const formatCurrency = (value: number): string => {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
   };
 
   const formatCurrencyValue = (value: number | undefined) => {
     if (typeof value === 'undefined') return '';
-    const formattedValue = formatNumber(value);
-    return settings.currency === 'USD' ? `$${formatValue(formattedValue, true)}` : `€${formatValue(formattedValue, true)}`;
+    const formattedValue = formatCurrency(value);
+    return settings.currency === 'USD' ? `$${formattedValue}` : `€${formattedValue}`;
   };
 
   const getBTCPrice = () => {
@@ -474,66 +536,95 @@ export default function BTCWallet() {
         </>
       ) : (
         <>
-          <RowSpaceBetween>
-            <Text>Balance</Text>
-            <Text>{!settings.walletAddress ? '--' : formatValue(walletData.balance, true)} BTC</Text>
-          </RowSpaceBetween>
-          <RowSpaceBetween>
-            <Text>Value</Text>
-            <Text>{!settings.walletAddress ? '--' : formatCurrencyValue(settings.currency === 'EUR' ? walletData.eurValue : walletData.usdValue)}</Text>
-          </RowSpaceBetween>
-          <RowSpaceBetween>
-            <Text>Price</Text>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1ch' }}>
-              <Badge
-                style={{
-                  color: walletData.priceChange >= 0 ? 'var(--theme-success)' : 'var(--theme-error)',
-                }}
-              >
-                {formatPercentage(walletData.priceChange)}%
-              </Badge>
-              <Text>{getBTCPrice()}</Text>
-            </div>
-          </RowSpaceBetween>
-
-          <Divider />
-
-          <Card title="Sats Converter">
-            <Input value={satsAmount} onChange={handleSatsInputChange} placeholder="Enter amount in sats" style={{ width: '100%', maxWidth: '42ch', marginBottom: '1ch' }} />
-            {convertedUSD && convertedEUR && <Text>≈ {settings.currency === 'USD' ? `$${convertedUSD}` : `€${convertedEUR}`}</Text>}
+          <br />
+          <Card title="Wallet Overview">
+            <RowSpaceBetween>
+              <Text>Balance</Text>
+              <Text>{!settings.walletAddress ? '--' : formatValue(walletData.balance, true)} BTC</Text>
+            </RowSpaceBetween>
+            <RowSpaceBetween>
+              <Text>Value</Text>
+              <Text>{!settings.walletAddress ? '--' : settings.hideValues ? '****' : formatCurrencyValue(settings.currency === 'EUR' ? walletData.eurValue : walletData.usdValue)}</Text>
+            </RowSpaceBetween>
+            <RowSpaceBetween>
+              <Text>Price</Text>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1ch' }}>
+                <Badge
+                  style={{
+                    color: walletData.priceChange >= 0 ? 'var(--theme-success)' : 'var(--theme-error)',
+                  }}
+                >
+                  {formatPercentage(walletData.priceChange)}%
+                </Badge>
+                <Text>{getBTCPrice()}</Text>
+              </div>
+            </RowSpaceBetween>
           </Card>
+
+          <br />
 
           {settings.walletAddress ? (
             <Card title="Recent Transactions">
               <RowSpaceBetween>
-                <Text>Synced</Text>
+                <Text>LAST UPDATE</Text>
                 <Badge>{new Date(walletData.lastUpdated).toLocaleString('de-DE', { hour12: false })}</Badge>
               </RowSpaceBetween>
-              <DataTable
-                data={walletData.transactions.slice(0, 3).map((tx: Transaction) => {
+              <Table>
+                <TableRow>
+                  <TableColumn>DATE</TableColumn>
+                  <TableColumn>TYPE</TableColumn>
+                  <TableColumn>AMOUNT</TableColumn>
+                  <TableColumn>VALUE</TableColumn>
+                </TableRow>
+                {walletData.transactions.slice(0, 3).map((tx, i) => {
                   const value = settings.currency === 'EUR' ? (tx.value / 100000000) * walletData.btcPriceEUR : (tx.value / 100000000) * walletData.btcPrice;
                   const satsFormatted = formatNumber(tx.value, 0);
 
-                  return [
-                    new Date(tx.confirmed).toLocaleDateString('en-US', {
-                      month: 'numeric',
-                      day: 'numeric',
-                      year: '2-digit',
-                    }),
-                    tx.tx_input_n === -1 ? '↓' : '↑',
-                    formatValue(`${satsFormatted} sats`, true),
-                    formatCurrencyValue(value),
-                  ].map(String);
+                  return (
+                    <TableRow key={tx.hash || i}>
+                      <TableColumn>
+                        {new Date(tx.confirmed).toLocaleDateString('de-DE', {
+                          month: 'numeric',
+                          day: 'numeric',
+                          year: '2-digit',
+                        })}
+                      </TableColumn>
+                      <TableColumn
+                        style={{
+                          color: tx.tx_input_n === -1 ? 'var(--theme-success)' : 'var(--theme-error)',
+                        }}
+                      >
+                        {tx.tx_input_n === -1 ? '↓ IN' : '↑ OUT'}
+                      </TableColumn>
+                      <TableColumn>{formatValue(satsFormatted, settings.hideValues)}</TableColumn>
+                      <TableColumn>{settings.hideValues ? '****' : settings.currency === 'USD' ? `$${formatCurrency(value)}` : `€${formatCurrency(value)}`}</TableColumn>
+                    </TableRow>
+                  );
                 })}
-              />
+              </Table>
             </Card>
           ) : (
-            <Accordion title="Recent Transactions">
+            <Card title="Recent Transactions">
               <Text>No wallet address set</Text>
-            </Accordion>
+            </Card>
           )}
 
-          <Divider />
+          <br />
+
+          <Card title="Sats Converter">
+            <Input value={satsAmount} onChange={handleSatsInputChange} placeholder="Enter amount in sats" label="Amount in Satoshis" autoComplete="off" isBlinking={true} style={{ width: '100%', maxWidth: '42ch', marginBottom: '1ch' }} />
+            <RowSpaceBetween>
+              <Text>USD Value</Text>
+              <Text>{convertedUSD ? `$${convertedUSD}` : '--'}</Text>
+            </RowSpaceBetween>
+            <RowSpaceBetween>
+              <Text>EUR Value</Text>
+              <Text>{convertedEUR ? `€${convertedEUR}` : '--'}</Text>
+            </RowSpaceBetween>
+            <Text style={{ opacity: 0.5, marginTop: '1ch' }}>{satsAmount && !isNaN(Number(satsAmount.replace(/,/g, ''))) ? `${(Number(satsAmount.replace(/,/g, '')) / 100000000).toFixed(8)} BTC` : '0.00000000 BTC'}</Text>
+          </Card>
+
+          <br />
 
           <Button
             theme="SECONDARY"

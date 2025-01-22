@@ -8,11 +8,9 @@ import Alert from '@components/AlertBanner';
 import BlockLoader from '@components/BlockLoader';
 import Button from '@components/Button';
 import Card from '@components/Card';
-import DataTable from '@components/DataTable';
 import Divider from '@components/Divider';
 import RowSpaceBetween from '@components/RowSpaceBetween';
 import Text from '@components/Text';
-import Accordion from '@components/Accordion';
 import Input from '@components/Input';
 import Navigation from '@components/Navigation';
 import Badge from '@components/Badge';
@@ -23,10 +21,10 @@ import Grid from '@components/Grid';
 import Table from '@components/Table';
 import TableRow from '@components/TableRow';
 import TableColumn from '@components/TableColumn';
-import Dialog from '@components/Dialog';
 import ModalTrigger from '@components/ModalTrigger';
 import ModalTransaction from '@components/modals/ModalTransaction';
 import ModalStack from '@components/ModalStack';
+import ModalNewWallet from '@components/modals/ModalNewWallet';
 
 // Constants
 const STORAGE_KEY = 'btc-wallet-data';
@@ -76,13 +74,6 @@ const formatNumber = (value: number | string, minimumFractionDigits = 2, maximum
     minimumFractionDigits,
     maximumFractionDigits: Math.min(maximumFractionDigits, 20),
   }).format(numValue);
-};
-
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
 };
 
 const formatValue = (value: number | string, hideValues: boolean, isCurrency = false) => {
@@ -152,9 +143,6 @@ export default function BTCWallet() {
 
       const storedWallets = localStorage.getItem(WALLETS_KEY);
       if (storedWallets) setWallets(JSON.parse(storedWallets));
-
-      const storedData = localStorage.getItem(STORAGE_KEY);
-      if (storedData) setWalletData(JSON.parse(storedData));
     } catch (e) {
       console.error('Error loading stored data:', e);
     }
@@ -162,6 +150,7 @@ export default function BTCWallet() {
 
   const [pendingSettings, setPendingSettings] = React.useState<Settings>(settings);
   const refreshTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const walletDataCacheRef = React.useRef<{ [address: string]: WalletData }>({});
 
   // Effects
   React.useEffect(() => {
@@ -215,18 +204,6 @@ export default function BTCWallet() {
 
   // API Calls
   const fetchBTCPrice = React.useCallback(async () => {
-    const cachedData = localStorage.getItem(STORAGE_KEY);
-    if (cachedData) {
-      const data = JSON.parse(cachedData);
-      const isCacheFresh = Date.now() - data.lastUpdated < CACHE_DURATION;
-
-      if (isCacheFresh && data.btcPrice) {
-        setWalletData(data);
-        setDataSource('cache');
-        return;
-      }
-    }
-
     try {
       const priceData = await fetchPriceWithFallback();
       setWalletData((prev) => {
@@ -237,10 +214,8 @@ export default function BTCWallet() {
           priceChange: priceData.priceChange,
           lastUpdated: Date.now(),
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
         return newData;
       });
-      setDataSource('fresh');
     } catch (error) {
       console.error('Error fetching BTC price:', error);
       setError('Failed to fetch price data. Will retry automatically.');
@@ -251,13 +226,11 @@ export default function BTCWallet() {
   const fetchWalletData = React.useCallback(async () => {
     if (!settings.walletAddress) return;
 
-    const cachedData = localStorage.getItem(STORAGE_KEY);
+    const cachedData = walletDataCacheRef.current[settings.walletAddress];
     if (cachedData) {
-      const data = JSON.parse(cachedData);
-      const isCacheFresh = Date.now() - data.lastUpdated < CACHE_DURATION;
-
-      if (isCacheFresh && data.balance !== undefined) {
-        setWalletData(data);
+      const isCacheFresh = Date.now() - cachedData.lastUpdated < CACHE_DURATION;
+      if (isCacheFresh && cachedData.balance !== undefined) {
+        setWalletData(cachedData);
         setDataSource('cache');
         return;
       }
@@ -282,7 +255,7 @@ export default function BTCWallet() {
           lastUpdated: Date.now(),
         };
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
+        walletDataCacheRef.current[settings.walletAddress] = newData;
         return newData;
       });
       setDataSource('fresh');
@@ -293,28 +266,13 @@ export default function BTCWallet() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [settings.walletAddress, walletData.btcPrice, walletData.btcPriceEUR]);
+  }, [settings.walletAddress]);
 
-  // Event Handlers
-  const handleUpdatePendingSettings = (newSettings: Partial<Settings>) => {
-    setPendingSettings((prev) => ({ ...prev, ...newSettings }));
-  };
-
-  const handleSaveSettings = () => {
-    if (pendingSettings.walletAddress && !validateBTCAddress(pendingSettings.walletAddress)) {
-      setError('Invalid BTC address format');
+  const handleAddWalletModal = () => {
+    if (!newWalletAddress || !newWalletName) {
+      setError('Missing wallet name or address');
       return;
     }
-
-    setSettings(pendingSettings);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(pendingSettings));
-    }
-    setShowSettings(false);
-    setError(null);
-  };
-
-  const handleAddWallet = () => {
     if (!validateBTCAddress(newWalletAddress)) {
       setError('Invalid BTC address format');
       return;
@@ -334,6 +292,25 @@ export default function BTCWallet() {
     setNewWalletName('');
     setNewWalletAddress('');
     selectWallet(newWallet);
+  };
+
+  // Event Handlers
+  const handleUpdatePendingSettings = (newSettings: Partial<Settings>) => {
+    setPendingSettings((prev) => ({ ...prev, ...newSettings }));
+  };
+
+  const handleSaveSettings = () => {
+    if (pendingSettings.walletAddress && !validateBTCAddress(pendingSettings.walletAddress)) {
+      setError('Invalid BTC address format');
+      return;
+    }
+
+    setSettings(pendingSettings);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(pendingSettings));
+    }
+    setShowSettings(false);
+    setError(null);
   };
 
   const handleUpdateWallet = (wallet: Wallet) => {
@@ -377,16 +354,12 @@ export default function BTCWallet() {
     return currentWallet?.name || 'Main';
   };
 
-  const formatCurrency = (value: number): string => {
-    return new Intl.NumberFormat('en-US', {
+  const formatCurrencyValue = (value: number | undefined) => {
+    if (typeof value === 'undefined') return '';
+    const formattedValue = new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value);
-  };
-
-  const formatCurrencyValue = (value: number | undefined) => {
-    if (typeof value === 'undefined') return '';
-    const formattedValue = formatCurrency(value);
     return settings.currency === 'USD' ? `$${formattedValue}` : `€${formattedValue}`;
   };
 
@@ -419,60 +392,66 @@ export default function BTCWallet() {
       />
 
       {error && <Alert>{error}</Alert>}
-
       {showWalletSelector && (
         <Grid>
-          {wallets.map((wallet) => (
-            <Card key={wallet.id} title={editWallet?.id === wallet.id ? <Input name="edit-name" value={editWallet.name} onChange={(e) => setEditWallet({ ...editWallet, name: e.target.value })} autoFocus /> : wallet.name}>
-              {editWallet?.id === wallet.id ? (
-                <>
-                  <Input name="edit-address" value={editWallet.address} onChange={(e) => setEditWallet({ ...editWallet, address: e.target.value })} placeholder="BTC address" style={{ marginBottom: '1ch' }} />
-                  <ButtonGroup
-                    items={[
-                      {
-                        body: 'Save',
-                        onClick: () => handleUpdateWallet(editWallet),
-                      },
-                      {
-                        body: 'Cancel',
-                        onClick: () => setEditWallet(null),
-                      },
-                    ]}
-                  />
-                </>
-              ) : (
-                <>
-                  <Text style={{ opacity: 0.7 }}>{wallet.address.slice(0, 16)}...</Text>
-                  <div style={{ display: 'flex', gap: '1ch', marginTop: '1ch' }}>
-                    <Badge>{wallet.address === settings.walletAddress ? 'Active' : 'Inactive'}</Badge>
-                    <Badge
-                      onClick={() =>
-                        setEditWallet({
-                          id: wallet.id,
-                          name: wallet.name,
-                          address: wallet.address,
-                        })
-                      }
-                      style={{ cursor: 'pointer' }}
-                    >
-                      Edit
-                    </Badge>
-                    <Badge onClick={() => selectWallet(wallet)} style={{ cursor: 'pointer' }}>
-                      Select
-                    </Badge>
+          <Card title="Manage Wallets">
+            {wallets.map((wallet) => (
+              <Row key={wallet.id} style={{ marginBottom: '1ch', padding: '1ch', background: editWallet?.id === wallet.id ? 'var(--theme-focused-foreground)' : 'transparent' }}>
+                {editWallet?.id === wallet.id ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1ch', width: '100%' }}>
+                    <Input name="edit-name" value={editWallet.name} onChange={(e) => setEditWallet({ ...editWallet, name: e.target.value })} autoFocus placeholder="Wallet name" />
+                    <Input name="edit-address" value={editWallet.address} onChange={(e) => setEditWallet({ ...editWallet, address: e.target.value })} placeholder="BTC address" />
+                    <ButtonGroup
+                      items={[
+                        {
+                          body: 'Save',
+                          onClick: () => handleUpdateWallet(editWallet),
+                        },
+                        {
+                          body: 'Cancel',
+                          onClick: () => setEditWallet(null),
+                        },
+                      ]}
+                    />
                   </div>
-                </>
-              )}
-            </Card>
-          ))}
-
-          <Card title="Add New Wallet">
-            <Input name="wallet-name" value={newWalletName} onChange={(e) => setNewWalletName(e.target.value)} placeholder="Wallet name" style={{ marginBottom: '1ch' }} />
-            <Input name="wallet-address" value={newWalletAddress} onChange={(e) => setNewWalletAddress(e.target.value)} placeholder="BTC address" style={{ marginBottom: '1ch' }} />
-            <Button onClick={handleAddWallet} theme="SECONDARY">
-              Add Wallet
-            </Button>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                    <div>
+                      <Text style={{}}>{wallet.name}</Text>
+                      <Text style={{ opacity: 0.7, fontSize: '0.8em' }}>{wallet.address.slice(0, 16)}...</Text>
+                    </div>
+                    <div style={{ display: 'flex', gap: '1ch' }}>
+                      <Badge>{wallet.address === settings.walletAddress ? 'Active' : ''}</Badge>
+                      <Badge
+                        onClick={() =>
+                          setEditWallet({
+                            id: wallet.id,
+                            name: wallet.name,
+                            address: wallet.address,
+                          })
+                        }
+                        style={{ cursor: 'pointer' }}
+                      >
+                        Edit
+                      </Badge>
+                      <Badge onClick={() => selectWallet(wallet)} style={{ cursor: 'pointer' }}>
+                        Select
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+              </Row>
+            ))}
           </Card>
+
+          <ModalTrigger
+            modal={ModalNewWallet}
+            modalProps={{
+              onAddWallet: handleAddWalletModal,
+            }}
+          >
+            <ActionButton>Add New Wallet</ActionButton>
+          </ModalTrigger>
         </Grid>
       )}
 
@@ -602,7 +581,7 @@ export default function BTCWallet() {
                           {tx.tx_input_n === -1 ? '↓ IN' : '↑ OUT'}
                         </TableColumn>
                         <TableColumn>{formatValue(satsFormatted, settings.hideValues)}</TableColumn>
-                        <TableColumn>{settings.hideValues ? '****' : settings.currency === 'USD' ? `$${formatCurrency(value)}` : `€${formatCurrency(value)}`}</TableColumn>
+                        <TableColumn>{settings.hideValues ? '****' : settings.currency === 'USD' ? `$${formatCurrencyValue(value)}` : `€${formatCurrencyValue(value)}`}</TableColumn>
                       </TableRow>
                     </ModalTrigger>
                   );
@@ -627,7 +606,7 @@ export default function BTCWallet() {
               <Text>EUR Value</Text>
               <Text>{convertedEUR ? `€${convertedEUR}` : '--'}</Text>
             </RowSpaceBetween>
-            <Text style={{ opacity: 0.5, marginTop: '1ch' }}>{satsAmount && !isNaN(Number(satsAmount.replace(/,/g, ''))) ? `${(Number(satsAmount.replace(/,/g, '')) / 100000000).toFixed(8)} BTC` : '0.00000000 BTC'}</Text>
+            <Text style={{ opacity: 0.5, marginTop: '1ch' }}>{satsAmount && !Number.isNaN(Number(satsAmount.replace(/,/g, ''))) ? `${(Number(satsAmount.replace(/,/g, '')) / 100000000).toFixed(8)} BTC` : '0.00000000 BTC'}</Text>
           </Card>
 
           <br />

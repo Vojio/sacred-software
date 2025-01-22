@@ -216,8 +216,8 @@ body.theme-black-pink {
   --theme-button-text: color(display-p3 0.964 0.826 0.912); //12 PRIMARY TEXT
   --theme-button-foreground: color(display-p3 0.271 0.095 0.231); //4
   --theme-button-background: color(display-p3 0.198 0.098 0.179); //3 ACTION BUTTON, ACTION LIST ITEM,
-  --theme-focused-foreground: color(display-p3 0.32 0.127 0.273); //4 HOVER, ACTIVE, FOCUS
-  --theme-focused-foreground-subdued: color(display-p3 1 0.192 0.82 / 0.219); // 5 HOVER, ACTIVE, FOCUS SUBDUED
+  --theme-focused-foreground: color(display-p3 0.417 0.341 0.784); //9 Violet HOVER, ACTIVE, FOCUS
+  --theme-focused-foreground-subdued: color(display-p3 0.522 0.424 1 / 0.769); // 9a HOVER, ACTIVE, FOCUS SUBDUED
 }
 
 body.theme-blue {

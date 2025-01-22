@@ -35,7 +35,7 @@ export default function Page() {
         </Row>
         <Row>{Package.description}</Row>
         <br />
-        <CardDouble title="Monitor">
+        <CardDouble title="Wallet Monitor">
           <BTCWallet />
         </CardDouble>
       </Grid>

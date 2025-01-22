@@ -1,6 +1,6 @@
 {
   "name": "VOJIO",
-  "description": "A software development company",
+  "description": "A bitcoin software development company",
   "engines": {
     "node": ">=18"
   },

@@ -32,6 +32,7 @@ import ModalStack from '@components/ModalStack';
 const STORAGE_KEY = 'btc-wallet-data';
 const SETTINGS_KEY = 'btc-wallet-settings';
 const WALLETS_KEY = 'btc-wallets';
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 // Types
 interface Wallet {
@@ -130,6 +131,7 @@ export default function BTCWallet() {
   const [error, setError] = React.useState<string | null>(null);
   const [showSettings, setShowSettings] = React.useState(false);
   const [showWalletSelector, setShowWalletSelector] = React.useState(false);
+  const [dataSource, setDataSource] = React.useState<'cache' | 'fresh'>('fresh');
 
   // Form States
   const [newWalletName, setNewWalletName] = React.useState('');
@@ -213,6 +215,18 @@ export default function BTCWallet() {
 
   // API Calls
   const fetchBTCPrice = React.useCallback(async () => {
+    const cachedData = localStorage.getItem(STORAGE_KEY);
+    if (cachedData) {
+      const data = JSON.parse(cachedData);
+      const isCacheFresh = Date.now() - data.lastUpdated < CACHE_DURATION;
+
+      if (isCacheFresh && data.btcPrice) {
+        setWalletData(data);
+        setDataSource('cache');
+        return;
+      }
+    }
+
     try {
       const priceData = await fetchPriceWithFallback();
       setWalletData((prev) => {
@@ -221,12 +235,12 @@ export default function BTCWallet() {
           btcPrice: priceData.btcPrice,
           btcPriceEUR: priceData.btcPriceEUR,
           priceChange: priceData.priceChange,
+          lastUpdated: Date.now(),
         };
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
-        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
         return newData;
       });
+      setDataSource('fresh');
     } catch (error) {
       console.error('Error fetching BTC price:', error);
       setError('Failed to fetch price data. Will retry automatically.');
@@ -236,6 +250,18 @@ export default function BTCWallet() {
 
   const fetchWalletData = React.useCallback(async () => {
     if (!settings.walletAddress) return;
+
+    const cachedData = localStorage.getItem(STORAGE_KEY);
+    if (cachedData) {
+      const data = JSON.parse(cachedData);
+      const isCacheFresh = Date.now() - data.lastUpdated < CACHE_DURATION;
+
+      if (isCacheFresh && data.balance !== undefined) {
+        setWalletData(data);
+        setDataSource('cache');
+        return;
+      }
+    }
 
     setIsLoading(true);
     setError(null);
@@ -256,11 +282,10 @@ export default function BTCWallet() {
           lastUpdated: Date.now(),
         };
 
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
-        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
         return newData;
       });
+      setDataSource('fresh');
     } catch (error) {
       console.error('Error fetching wallet data:', error);
       setError('Failed to fetch wallet data. Please try again later.');
@@ -268,7 +293,7 @@ export default function BTCWallet() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [settings.walletAddress]);
+  }, [settings.walletAddress, walletData.btcPrice, walletData.btcPriceEUR]);
 
   // Event Handlers
   const handleUpdatePendingSettings = (newSettings: Partial<Settings>) => {
@@ -498,7 +523,11 @@ export default function BTCWallet() {
       ) : (
         <>
           <br />
-          <Card title="Wallet Overview">
+          <Card title="Overview">
+            <RowSpaceBetween>
+              <Text>Data Source</Text>
+              <Badge>{dataSource === 'cache' ? 'CACHED' : 'FRESH'}</Badge>
+            </RowSpaceBetween>
             <RowSpaceBetween>
               <Text>Balance</Text>
               <Text>₿{!settings.walletAddress ? '--' : formatValue(walletData.balance, settings.hideValues)}</Text>{' '}
@@ -528,7 +557,10 @@ export default function BTCWallet() {
             <Card title="Recent Transactions">
               <RowSpaceBetween>
                 <Text>LAST UPDATE</Text>
-                <Badge>{new Date(walletData.lastUpdated).toLocaleString('de-DE', { hour12: false })}</Badge>
+                <div style={{ display: 'flex', gap: '1ch', alignItems: 'center' }}>
+                  <Badge>{dataSource === 'cache' ? 'CACHED' : 'FRESH'}</Badge>
+                  <Badge>{new Date(walletData.lastUpdated).toLocaleString('de-DE', { hour12: false })}</Badge>
+                </div>
               </RowSpaceBetween>
               <Table>
                 <TableRow>
@@ -586,7 +618,7 @@ export default function BTCWallet() {
           <br />
 
           <Card title="Sats Converter">
-            <Input value={satsAmount} onChange={handleSatsInputChange} placeholder="Enter amount in sats" label="Amount in Satoshis" autoComplete="off" style={{ width: '100%', maxWidth: '42ch', marginBottom: '1ch' }} />
+            <Input value={satsAmount} onChange={handleSatsInputChange} placeholder="e.g. 21000" label="Amount in Satoshis" autoComplete="off" style={{ width: '100%', maxWidth: '42ch', marginBottom: '1ch' }} />
             <RowSpaceBetween>
               <Text>USD Value</Text>
               <Text>{convertedUSD ? `$${convertedUSD}` : '--'}</Text>

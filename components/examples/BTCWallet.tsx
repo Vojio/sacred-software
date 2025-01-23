@@ -396,8 +396,8 @@ export default function BTCWallet() {
   const formatCurrencyValue = (value: number | undefined) => {
     if (typeof value === 'undefined') return '';
     const formattedValue = new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(value);
     return settings.currency === 'USD' ? `$${formattedValue}` : `€${formattedValue}`;
   };
@@ -554,7 +554,7 @@ export default function BTCWallet() {
             </RowSpaceBetween>
             <RowSpaceBetween>
               <Text>Balance</Text>
-              <Text>₿{!settings.walletAddress ? '--' : formatValue(walletData.balance, settings.hideValues)}</Text>{' '}
+              <Text>{!settings.walletAddress ? '--' : formatValue(walletData.balance, settings.hideValues)}</Text>{' '}
             </RowSpaceBetween>
             <RowSpaceBetween>
               <Text>Value</Text>
@@ -562,11 +562,10 @@ export default function BTCWallet() {
             </RowSpaceBetween>
             <RowSpaceBetween>
               <Text>Price</Text>
-              <Text>{getBTCPrice()}</Text>
-            </RowSpaceBetween>
-            <RowSpaceBetween>
-              <Text>24h Change</Text>
-              <Badge>{formatPercentage(walletData.priceChange)}%</Badge>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1ch' }}>
+                <Badge>{formatPercentage(walletData.priceChange)}%</Badge>
+                <Text>{getBTCPrice()}</Text>
+              </div>
             </RowSpaceBetween>
           </Card>
 

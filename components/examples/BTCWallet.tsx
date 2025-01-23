@@ -574,9 +574,9 @@ export default function BTCWallet() {
           {settings.walletAddress ? (
             <Card title="Recent Transactions">
               <RowSpaceBetween>
-                <Text>Data Source</Text>
+                <Text>LAST UPDATE</Text>
                 <div style={{ display: 'flex', gap: '1ch', alignItems: 'center' }}>
-                  <Badge>{dataSource === 'cache' ? 'CACHED' : 'FRESH'}</Badge>
+                  {/* <Badge>{dataSource === 'cache' ? 'CACHED' : 'FRESH'}</Badge> */}
                   <Badge>{new Date(walletData.lastUpdated).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</Badge>
                 </div>
               </RowSpaceBetween>
@@ -604,7 +604,7 @@ export default function BTCWallet() {
                     >
                       <TableRow style={{ cursor: 'pointer' }}>
                         <TableColumn>{formatTimeAgo(tx.confirmed)}</TableColumn>
-                        <TableColumn>{tx.tx_input_n === -1 ? '↓ IN' : '↑ OUT'}</TableColumn>
+                        <TableColumn>{tx.tx_input_n === -1 ? 'IN' : 'OUT'}</TableColumn>
                         <TableColumn>{formatValue(satsFormatted, settings.hideValues)}</TableColumn>
                       </TableRow>
                     </ModalTrigger>

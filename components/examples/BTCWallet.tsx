@@ -575,7 +575,7 @@ export default function BTCWallet() {
           {settings.walletAddress ? (
             <Card title="Recent Transactions">
               <RowSpaceBetween>
-                <Text>LAST UPDATED</Text>
+                <Text>Data</Text>
                 <div style={{ display: 'flex', gap: '1ch', alignItems: 'center' }}>
                   <Badge>{dataSource === 'cache' ? 'CACHED' : 'FRESH'}</Badge>
                   <Badge>{new Date(walletData.lastUpdated).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</Badge>

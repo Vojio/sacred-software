@@ -158,13 +158,17 @@ const DefaultActionBar: React.FC<DefaultActionBarProps> = ({ items = [] }) => {
             items: [
               {
                 icon: '⊹',
-                children: 'Pink Bikini [DEFAULT/AUTO]',
+                children: 'Pink Bikini [AUTO]',
                 onClick: () => Utilities.onHandleThemeChange('theme-black-pink'),
               },
               {
                 icon: '⊹',
-                //This one has dark/light mode
                 children: 'Oranges In Wintergarden [AUTO]',
+                onClick: () => Utilities.onHandleThemeChange('theme-orange'),
+              },
+              {
+                icon: '⊹',
+                children: 'Blank Slate [DEFAULT/AUTO]',
                 onClick: () => Utilities.onHandleThemeChange('theme-orange'),
               },
               {

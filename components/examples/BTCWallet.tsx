@@ -46,6 +46,7 @@ interface Settings {
   hideValues: boolean;
   currency: 'USD' | 'EUR';
   autoRefresh: boolean;
+  resetApp: boolean;
 }
 
 interface Transaction {
@@ -88,6 +89,7 @@ const defaultSettings: Settings = {
   hideValues: false,
   currency: 'USD',
   autoRefresh: true,
+  resetApp: false,
 };
 
 const initialWalletData: WalletData = {
@@ -305,6 +307,12 @@ export default function BTCWallet() {
       return;
     }
 
+    if (pendingSettings.resetApp) {
+      localStorage.clear();
+      window.location.reload();
+      return;
+    }
+
     setSettings(pendingSettings);
     if (typeof window !== 'undefined') {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(pendingSettings));
@@ -506,6 +514,12 @@ export default function BTCWallet() {
               <Text>Auto Refresh</Text>
               <Checkbox name="autoRefresh" defaultChecked={pendingSettings.autoRefresh} onChange={(e) => handleUpdatePendingSettings({ autoRefresh: e.target.checked })}>
                 Auto refresh (5min)
+              </Checkbox>
+            </Row>
+            <Row>
+              <Text>Reset App</Text>
+              <Checkbox name="resetApp" defaultChecked={pendingSettings.resetApp} onChange={(e) => handleUpdatePendingSettings({ resetApp: e.target.checked })}>
+                Reset App
               </Checkbox>
             </Row>
             <Row>

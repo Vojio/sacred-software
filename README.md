@@ -58,9 +58,12 @@ This update includes significant changes focusing on a Bitcoin wallet implementa
 -   Modified to include the `BTCWallet` component within the main page layout.
 -   Updated imports for the changed structure of the components.
 
-### 6. General Changes
+### 6. New Themes (global.scss)
 
--   Added new Themes with auto light/dark mode styling in `global.scss`.
+-   Added several new themes with light/dark mode variations:
+    -   `theme-black-pink`: A light and dark theme with a pinkish-violet accent.
+    -   `theme-orange`: An orange theme with light and dark variants
+-   Themes are automatically applied based on the user's system preference for light/dark mode.
 
 ## Getting Started
 

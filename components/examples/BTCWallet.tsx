@@ -357,31 +357,31 @@ export default function BTCWallet() {
     const diffInSeconds = Math.round((now.getTime() - date.getTime()) / 1000);
 
     if (diffInSeconds < 60) {
-      return `${diffInSeconds} second${diffInSeconds !== 1 ? 's' : ''} ago`;
+      return `${diffInSeconds} second${diffInSeconds !== 1 ? 's' : ''}`;
     }
 
     const diffInMinutes = Math.round(diffInSeconds / 60);
     if (diffInMinutes < 60) {
-      return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''} ago`;
+      return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''}`;
     }
 
     const diffInHours = Math.round(diffInMinutes / 60);
     if (diffInHours < 24) {
-      return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''} ago`;
+      return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''}`;
     }
 
     const diffInDays = Math.round(diffInHours / 24);
     if (diffInDays < 30) {
-      return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
+      return `${diffInDays} day${diffInDays !== 1 ? 's' : ''}`;
     }
 
     const diffInMonths = Math.round(diffInDays / 30);
     if (diffInMonths < 12) {
-      return `${diffInMonths} month${diffInMonths !== 1 ? 's' : ''} ago`;
+      return `${diffInMonths} month${diffInMonths !== 1 ? 's' : ''}`;
     }
 
     const diffInYears = Math.round(diffInDays / 365);
-    return `${diffInYears} year${diffInYears !== 1 ? 's' : ''} ago`;
+    return `${diffInYears} year${diffInYears !== 1 ? 's' : ''}`;
   };
 
   const formatPercentage = (value: number): string => {

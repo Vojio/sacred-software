@@ -554,7 +554,7 @@ export default function BTCWallet() {
             </RowSpaceBetween>
             <RowSpaceBetween>
               <Text>Balance</Text>
-              <Text>{!settings.walletAddress ? '--' : formatValue(walletData.balance, settings.hideValues)}</Text>{' '}
+              <Text>{!settings.walletAddress ? '--' : settings.hideValues ? '********' : `₿${formatValue(walletData.balance, settings.hideValues)}`}</Text>{' '}
             </RowSpaceBetween>
             <RowSpaceBetween>
               <Text>Value</Text>
@@ -582,7 +582,7 @@ export default function BTCWallet() {
               </RowSpaceBetween>
               <Table>
                 <TableRow>
-                  <TableColumn>DATE</TableColumn>
+                  <TableColumn>TIME AGO</TableColumn>
                   <TableColumn>TYPE</TableColumn>
                   <TableColumn>SATS</TableColumn>
                 </TableRow>

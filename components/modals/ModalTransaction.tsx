@@ -115,7 +115,7 @@ function ModalTransaction({ buttonText, transaction, btcPrice, btcPriceEUR, curr
               <Text>BTC</Text>
             </TableColumn>
             <TableColumn>
-              <Text>₿{formatValue(btcAmount.toFixed(8), hideValues)}</Text>
+              <Text>{hideValues ? formatValue(btcAmount.toFixed(8), hideValues) : `₿${formatValue(btcAmount.toFixed(8), hideValues)}`}</Text>
             </TableColumn>
           </TableRow>
 

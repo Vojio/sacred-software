@@ -363,13 +363,8 @@ export default function BTCWallet() {
     }
 
     const diffInDays = Math.round(diffInHours / 24);
-    if (diffInDays < 7) {
+    if (diffInDays < 30) {
       return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
-    }
-
-    const diffInWeeks = Math.round(diffInDays / 7);
-    if (diffInWeeks < 4) {
-      return `${diffInWeeks} week${diffInWeeks !== 1 ? 's' : ''} ago`;
     }
 
     const diffInMonths = Math.round(diffInDays / 30);

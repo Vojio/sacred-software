@@ -243,39 +243,39 @@ section {
 
 @media (prefers-color-scheme: dark) {
   body.theme-slate {
-    --theme-overlay: hsl(240, 100%, 9%, 0.09);
-    --theme-background: hsl(240, 6%, 7%);
-    --theme-background-modal: hsl(220, 6%, 10%);
-    --theme-background-modal-footer: hsl(225, 6%, 14%);
-    --theme-background-input: hsl(220, 6%, 10%);
-    --theme-border: hsl(213, 8%, 23%);
-    --theme-border-subdued: hsla(208, 91%, 92%, 0.19);
-    --theme-text: hsl(216, 7%, 71%);
-    --theme-button: hsl(220, 9%, 94%);
-    --theme-button-text: hsl(240, 6%, 7%);
-    --theme-button-foreground: hsl(213, 8%, 28%);
-    --theme-button-background: hsl(213, 8%, 23%);
-    --theme-focused-foreground: hsl(219, 6%, 44%);
-    --theme-focused-foreground-subdued: hsla(216, 88%, 93%, 0.43);
+    --theme-overlay: hsla(240, 100%, 9%, 0.09); // slateDarkA.slateA4
+    --theme-background: hsl(240, 6%, 7%); // slateDark.slate1
+    --theme-background-modal: hsl(220, 6%, 10%); // slateDark.slate2
+    --theme-background-modal-footer: hsl(225, 6%, 14%); // slateDark.slate3
+    --theme-background-input: hsl(220, 6%, 10%); // slateDark.slate2
+    --theme-border: hsl(213, 8%, 23%); // slateDark.slate6
+    --theme-border-subdued: hsla(208, 91%, 92%, 0.19); // slateDarkA.slateA6
+    --theme-text: hsl(216, 7%, 71%); // slateDark.slate11
+    --theme-button: hsl(220, 9%, 94%); // slateDark.slate12
+    --theme-button-text: hsl(240, 6%, 7%); // slateDark.slate1
+    --theme-button-foreground: hsl(213, 8%, 28%); // slateDark.slate7
+    --theme-button-background: hsl(213, 8%, 23%); // slateDark.slate6
+    --theme-focused-foreground: hsl(219, 6%, 44%); // slateDark.slate9
+    --theme-focused-foreground-subdued: hsla(216, 88%, 93%, 0.43); // slateDarkA.slateA9
   }
 }
 
 @media (prefers-color-scheme: light) {
   body.theme-slate {
-    --theme-overlay: hsla(240, 100%, 9%, 0.09);
-    --theme-background: hsl(240, 20%, 99%);
-    --theme-background-modal: hsl(240, 20%, 98%);
-    --theme-background-modal-footer: hsl(240, 11%, 95%);
-    --theme-background-input: hsl(240, 20%, 98%);
-    --theme-border: hsl(240, 10%, 86%);
-    --theme-border-subdued: hsla(240, 100%, 9%, 0.15);
-    --theme-text: hsl(220, 6%, 40%);
-    --theme-button: hsl(210, 13%, 13%);
-    --theme-button-text: hsl(240, 20%, 99%);
-    --theme-button-foreground: hsl(233, 10%, 82%);
-    --theme-button-background: hsl(240, 10%, 86%);
-    --theme-focused-foreground: hsl(231, 6%, 57%);
-    --theme-focused-foreground-subdued: hsla(230, 100%, 6%, 0.45);
+    --theme-overlay: hsla(240, 100%, 9%, 0.09); // slateA.slateA4
+    --theme-background: hsl(240, 20%, 99%); // slate.slate1
+    --theme-background-modal: hsl(240, 20%, 98%); // slate.slate2
+    --theme-background-modal-footer: hsl(240, 11%, 95%); // slate.slate3
+    --theme-background-input: hsl(240, 20%, 98%); // slate.slate2
+    --theme-border: hsl(240, 10%, 86%); // slate.slate6
+    --theme-border-subdued: hsla(240, 100%, 9%, 0.15); // slateA.slateA6
+    --theme-text: hsl(220, 6%, 40%); // slate.slate11
+    --theme-button: hsl(210, 13%, 13%); // slate.slate12
+    --theme-button-text: hsl(240, 20%, 99%); // slate.slate1
+    --theme-button-foreground: hsl(233, 10%, 82%); // slate.slate7
+    --theme-button-background: hsl(240, 10%, 86%); // slate.slate6
+    --theme-focused-foreground: hsl(231, 6%, 57%); // slate.slate9
+    --theme-focused-foreground-subdued: hsla(230, 100%, 6%, 0.45); // slateA.slateA9
   }
 }
 

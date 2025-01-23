@@ -4,7 +4,7 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    background_color: '#000000',
+    background_color: 'var(--theme-background)',
     description: Package.description,
     display: 'standalone',
     icons: [
@@ -17,6 +17,6 @@ export default function manifest(): MetadataRoute.Manifest {
     name: Package.name,
     short_name: Package.name,
     start_url: '/',
-    theme_color: '#000000',
+    theme_color: 'var(--theme-background)',
   };
 }

@@ -169,7 +169,7 @@ const DefaultActionBar: React.FC<DefaultActionBarProps> = ({ items = [] }) => {
               {
                 icon: '⊹',
                 children: 'Blank Slate [DEFAULT/AUTO]',
-                onClick: () => Utilities.onHandleThemeChange('theme-orange'),
+                onClick: () => Utilities.onHandleThemeChange('theme-slate'),
               },
               {
                 icon: '⊹',

@@ -356,31 +356,31 @@ export default function BTCWallet() {
     const now = new Date();
     const diffInSeconds = Math.round((now.getTime() - date.getTime()) / 1000);
     if (diffInSeconds < 60) {
-      return `${diffInSeconds} second${diffInSeconds !== 1 ? 's' : ''} ago`;
+      return `${diffInSeconds} second${diffInSeconds !== 1 ? 's' : ''}`;
     }
 
     const diffInMinutes = Math.round(diffInSeconds / 60);
     if (diffInMinutes < 60) {
-      return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''} ago`;
+      return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''}`;
     }
 
     const diffInHours = Math.round(diffInMinutes / 60);
     if (diffInHours < 24) {
-      return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''} ago`;
+      return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''}`;
     }
 
     const diffInDays = Math.round(diffInHours / 24);
     if (diffInDays < 30) {
-      return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
+      return `${diffInDays} day${diffInDays !== 1 ? 's' : ''}`;
     }
 
     const diffInMonths = Math.round(diffInDays / 30);
     if (diffInMonths < 12) {
-      return `${diffInMonths} month${diffInMonths !== 1 ? 's' : ''} ago`;
+      return `${diffInMonths} month${diffInMonths !== 1 ? 's' : ''}`;
     }
 
     const diffInYears = Math.round(diffInDays / 365);
-    return `${diffInYears} year${diffInYears !== 1 ? 's' : ''} ago`;
+    return `${diffInYears} year${diffInYears !== 1 ? 's' : ''}`;
   };
 
   const formatPercentage = (value: number): string => {
@@ -562,10 +562,11 @@ export default function BTCWallet() {
             </RowSpaceBetween>
             <RowSpaceBetween>
               <Text>Price</Text>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1ch' }}>
-                <Badge>{formatPercentage(walletData.priceChange)}%</Badge>
-                <Text>{getBTCPrice()}</Text>
-              </div>
+              <Text>{getBTCPrice()}</Text>
+            </RowSpaceBetween>
+            <RowSpaceBetween>
+              <Text>24h Change</Text>
+              <Badge>{formatPercentage(walletData.priceChange)}%</Badge>
             </RowSpaceBetween>
           </Card>
 
@@ -574,7 +575,7 @@ export default function BTCWallet() {
           {settings.walletAddress ? (
             <Card title="Recent Transactions">
               <RowSpaceBetween>
-                <Text>LAST UPDATE</Text>
+                <Text>LAST UPDATED</Text>
                 <div style={{ display: 'flex', gap: '1ch', alignItems: 'center' }}>
                   {/* <Badge>{dataSource === 'cache' ? 'CACHED' : 'FRESH'}</Badge> */}
                   <Badge>{new Date(walletData.lastUpdated).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</Badge>
@@ -582,7 +583,7 @@ export default function BTCWallet() {
               </RowSpaceBetween>
               <Table>
                 <TableRow>
-                  <TableColumn>WHEN</TableColumn>
+                  <TableColumn>DATE</TableColumn>
                   <TableColumn>TYPE</TableColumn>
                   <TableColumn>SATS</TableColumn>
                 </TableRow>

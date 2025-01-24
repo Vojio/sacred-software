@@ -560,7 +560,7 @@ export default function BTCWallet() {
               />
             </Row>
           </Card>
-          <br />
+          <div style={{ height: '1ch' }} />
           <Button onClick={handleSaveSettings} theme="SECONDARY">
             Save Settings
           </Button>
@@ -648,7 +648,7 @@ export default function BTCWallet() {
             <Text style={{ opacity: 0.5 }}>{satsAmount && !Number.isNaN(Number(satsAmount.replace(/,/g, ''))) ? `${(Number(satsAmount.replace(/,/g, '')) / 100000000).toFixed(8)} BTC` : '0.00000000 BTC'}</Text>
           </Card>
 
-          <br />
+          <div style={{ height: '1ch' }} />
 
           <Button
             theme="SECONDARY"

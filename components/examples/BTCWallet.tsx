@@ -392,7 +392,7 @@ export default function BTCWallet() {
 
     const currentWallet = wallets.find((w) => w.address === settings.walletAddress);
 
-    return currentWallet?.name || 'ADD WALLET';
+    return currentWallet?.name || 'WALLETS';
   };
 
   const formatCurrencyValue = (value: number | undefined) => {

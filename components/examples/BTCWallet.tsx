@@ -388,9 +388,11 @@ export default function BTCWallet() {
   };
 
   const getCurrentWalletName = () => {
-    if (!isClientSide) return 'Main';
+    if (!isClientSide) return 'ADD WALLET';
+
     const currentWallet = wallets.find((w) => w.address === settings.walletAddress);
-    return currentWallet?.name || 'Main';
+
+    return currentWallet?.name || 'ADD WALLET';
   };
 
   const formatCurrencyValue = (value: number | undefined) => {

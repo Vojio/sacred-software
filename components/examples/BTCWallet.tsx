@@ -604,7 +604,7 @@ export default function BTCWallet() {
                     >
                       <TableRow style={{ cursor: 'pointer' }}>
                         <TableColumn>{formatTimeAgo(tx.confirmed)}</TableColumn>
-                        <TableColumn>{tx.tx_input_n === -1 ? 'IN' : 'OUT'}</TableColumn>
+                        <TableColumn>{tx.tx_input_n === -1 ? '↓ IN' : '↑ OUT'}</TableColumn>
                         <TableColumn>{formatValue(satsFormatted, settings.hideValues)}</TableColumn>
                       </TableRow>
                     </ModalTrigger>

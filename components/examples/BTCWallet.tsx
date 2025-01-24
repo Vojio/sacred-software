@@ -388,7 +388,7 @@ export default function BTCWallet() {
   };
 
   const getCurrentWalletName = () => {
-    if (!isClientSide) return 'WALLET';
+    if (!isClientSide) return 'WALLETS';
 
     const currentWallet = wallets.find((w) => w.address === settings.walletAddress);
 

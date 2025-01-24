@@ -462,12 +462,14 @@ export default function BTCWallet() {
                         <Text>{wallet.name}</Text>
                       </Row>
                       <Row>
-                        <Text style={{ opacity: 0.7, fontSize: '0.8em' }}>{wallet.address.slice(0, 16)}...</Text>
+                        <Text style={{ opacity: 0.7, fontSize: '0.8em' }}>
+                          {wallet.address.slice(0, 6)}...{wallet.address.slice(-6)}
+                        </Text>
                       </Row>
                       <ButtonGroup
                         items={[
                           {
-                            body: wallet.address === settings.walletAddress ? 'Active' : '',
+                            body: wallet.address === settings.walletAddress ? 'Active' : 'Inactive',
                           },
                           {
                             body: 'Edit',

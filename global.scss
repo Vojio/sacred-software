@@ -241,9 +241,10 @@ section {
   }
 }
 
+//Slate Monochrome Theme - Radix Colors
 @media (prefers-color-scheme: dark) {
   body.theme-slate {
-    --theme-overlay: hsla(240, 100%, 9%, 0.09); // slateDarkA.slateA4
+    --theme-overlay: hsla(208, 91%, 92%, 0.19); // slateDarkA.slateA6
     --theme-background: hsl(240, 6%, 7%); // slateDark.slate1
     --theme-background-modal: hsl(220, 6%, 10%); // slateDark.slate2
     --theme-background-modal-footer: hsl(225, 6%, 14%); // slateDark.slate3
@@ -262,7 +263,7 @@ section {
 
 @media (prefers-color-scheme: light) {
   body.theme-slate {
-    --theme-overlay: hsla(240, 100%, 9%, 0.09); // slateA.slateA4
+    --theme-overlay: hsla(240, 100%, 9%, 0.15); // slateA.slateA6
     --theme-background: hsl(240, 20%, 99%); // slate.slate1
     --theme-background-modal: hsl(240, 20%, 98%); // slate.slate2
     --theme-background-modal-footer: hsl(240, 11%, 95%); // slate.slate3

@@ -17,7 +17,6 @@ import Badge from '@components/Badge';
 import Row from '@components/Row';
 import Checkbox from '@components/Checkbox';
 import ButtonGroup from '@components/ButtonGroup';
-import Grid from '@components/Grid';
 import Table from '@components/Table';
 import TableRow from '@components/TableRow';
 import TableColumn from '@components/TableColumn';
@@ -336,6 +335,15 @@ export default function BTCWallet() {
     setEditWallet(null);
   };
 
+  const handleDeleteWallet = (wallet: Wallet) => {
+    const updatedWallets = wallets.filter((w) => w.id !== wallet.id);
+    setWallets(updatedWallets);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(WALLETS_KEY, JSON.stringify(updatedWallets));
+    }
+    setEditWallet(null);
+  };
+
   const selectWallet = (wallet: Wallet) => {
     const newSettings = { ...settings, walletAddress: wallet.address };
     setSettings(newSettings);
@@ -453,6 +461,10 @@ export default function BTCWallet() {
                             body: 'Cancel',
                             onClick: () => setEditWallet(null),
                           },
+                          {
+                            body: 'Delete',
+                            onClick: () => handleDeleteWallet(editWallet),
+                          },
                         ]}
                       />
                     </TableColumn>
@@ -491,7 +503,6 @@ export default function BTCWallet() {
                 </TableRow>
               ))}
             </Table>
-            <br />
             <ModalTrigger
               modal={ModalNewWallet}
               modalProps={{
@@ -634,7 +645,7 @@ export default function BTCWallet() {
               <Text>EUR Value</Text>
               <Text>{convertedEUR ? `€${convertedEUR}` : '--'}</Text>
             </RowSpaceBetween>
-            <Text style={{ opacity: 0.5, marginTop: '1ch' }}>{satsAmount && !Number.isNaN(Number(satsAmount.replace(/,/g, ''))) ? `${(Number(satsAmount.replace(/,/g, '')) / 100000000).toFixed(8)} BTC` : '0.00000000 BTC'}</Text>
+            <Text style={{ opacity: 0.5 }}>{satsAmount && !Number.isNaN(Number(satsAmount.replace(/,/g, ''))) ? `${(Number(satsAmount.replace(/,/g, '')) / 100000000).toFixed(8)} BTC` : '0.00000000 BTC'}</Text>
           </Card>
 
           <br />

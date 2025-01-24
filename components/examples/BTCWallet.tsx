@@ -549,7 +549,7 @@ export default function BTCWallet() {
       ) : (
         <>
           <br />
-          <Card title="Overview">
+          <Card title="Wallet Overview">
             <RowSpaceBetween>
               <Text>Data Source</Text>
               <Badge>{dataSource === 'cache' ? 'CACHED' : 'FRESH'}</Badge>
@@ -570,9 +570,7 @@ export default function BTCWallet() {
               </div>
             </RowSpaceBetween>
           </Card>
-
           <br />
-
           {settings.walletAddress ? (
             <Card title="Recent Transactions">
               <RowSpaceBetween>
@@ -622,7 +620,7 @@ export default function BTCWallet() {
 
           <br />
 
-          <Card title="Converter">
+          <Card title=" Sats Converter">
             <Input value={satsAmount} onChange={handleSatsInputChange} placeholder="Enter amount" label="Amount in Satoshis" autoComplete="off" style={{ width: '100%', maxWidth: '42ch', marginBottom: '1ch' }} />
             <RowSpaceBetween>
               <Text>USD Value</Text>

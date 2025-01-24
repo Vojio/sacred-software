@@ -434,66 +434,72 @@ export default function BTCWallet() {
 
       {error && <Alert>{error}</Alert>}
       {showWalletSelector && (
-        <Grid>
+        <div>
           <Card title="Manage Wallets">
-            {wallets.map((wallet) => (
-              <Row key={wallet.id} style={{ marginBottom: '1ch', padding: '1ch', background: editWallet?.id === wallet.id ? 'var(--theme-focused-foreground)' : 'transparent' }}>
-                {editWallet?.id === wallet.id ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1ch', width: '100%' }}>
-                    <Input name="edit-name" value={editWallet.name} onChange={(e) => setEditWallet({ ...editWallet, name: e.target.value })} autoFocus placeholder="Wallet name" />
-                    <Input name="edit-address" value={editWallet.address} onChange={(e) => setEditWallet({ ...editWallet, address: e.target.value })} placeholder="BTC address" />
-                    <ButtonGroup
-                      items={[
-                        {
-                          body: 'Save',
-                          onClick: () => handleUpdateWallet(editWallet),
-                        },
-                        {
-                          body: 'Cancel',
-                          onClick: () => setEditWallet(null),
-                        },
-                      ]}
-                    />
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <div>
-                      <Text style={{}}>{wallet.name}</Text>
-                      <Text style={{ opacity: 0.7, fontSize: '0.8em' }}>{wallet.address.slice(0, 16)}...</Text>
-                    </div>
-                    <div style={{ display: 'flex', gap: '1ch' }}>
-                      <Badge>{wallet.address === settings.walletAddress ? 'Active' : ''}</Badge>
-                      <Badge
-                        onClick={() =>
-                          setEditWallet({
-                            id: wallet.id,
-                            name: wallet.name,
-                            address: wallet.address,
-                          })
-                        }
-                        style={{ cursor: 'pointer' }}
-                      >
-                        Edit
-                      </Badge>
-                      <Badge onClick={() => selectWallet(wallet)} style={{ cursor: 'pointer' }}>
-                        Select
-                      </Badge>
-                    </div>
-                  </div>
-                )}
-              </Row>
-            ))}
+            <Table>
+              {wallets.map((wallet) => (
+                <TableRow key={wallet.id} style={{ background: editWallet?.id === wallet.id ? 'var(--theme-focused-foreground)' : 'transparent' }}>
+                  {editWallet?.id === wallet.id ? (
+                    <TableColumn>
+                      <Input name="edit-name" value={editWallet.name} onChange={(e) => setEditWallet({ ...editWallet, name: e.target.value })} autoFocus placeholder="Wallet name" />
+                      <Input name="edit-address" value={editWallet.address} onChange={(e) => setEditWallet({ ...editWallet, address: e.target.value })} placeholder="BTC address" />
+                      <ButtonGroup
+                        items={[
+                          {
+                            body: 'Save',
+                            onClick: () => handleUpdateWallet(editWallet),
+                          },
+                          {
+                            body: 'Cancel',
+                            onClick: () => setEditWallet(null),
+                          },
+                        ]}
+                      />
+                    </TableColumn>
+                  ) : (
+                    <TableColumn>
+                      <Row>
+                        <Text>{wallet.name}</Text>
+                      </Row>
+                      <Row>
+                        <Text style={{ opacity: 0.7, fontSize: '0.8em' }}>{wallet.address.slice(0, 16)}...</Text>
+                      </Row>
+                      <ButtonGroup
+                        items={[
+                          {
+                            body: wallet.address === settings.walletAddress ? 'Active' : '',
+                          },
+                          {
+                            body: 'Edit',
+                            onClick: () =>
+                              setEditWallet({
+                                id: wallet.id,
+                                name: wallet.name,
+                                address: wallet.address,
+                              }),
+                          },
+                          {
+                            body: 'Select',
+                            onClick: () => selectWallet(wallet),
+                          },
+                        ]}
+                      />
+                    </TableColumn>
+                  )}
+                </TableRow>
+              ))}
+            </Table>
+            <br />
+            <ModalTrigger
+              modal={ModalNewWallet}
+              modalProps={{
+                onAddWallet: handleAddWalletModal,
+              }}
+            >
+              <ActionButton>Add New Wallet</ActionButton>
+            </ModalTrigger>
           </Card>
-
-          <ModalTrigger
-            modal={ModalNewWallet}
-            modalProps={{
-              onAddWallet: handleAddWalletModal,
-            }}
-          >
-            <ActionButton>Add New Wallet</ActionButton>
-          </ModalTrigger>
-        </Grid>
+        </div>
       )}
 
       {isLoading && <BlockLoader />}
@@ -548,7 +554,6 @@ export default function BTCWallet() {
         </>
       ) : (
         <>
-          <br />
           <Card title="Wallet Overview">
             <RowSpaceBetween>
               <Text>Data Source</Text>
@@ -570,7 +575,6 @@ export default function BTCWallet() {
               </div>
             </RowSpaceBetween>
           </Card>
-          <br />
           {settings.walletAddress ? (
             <Card title="Recent Transactions">
               <RowSpaceBetween>
@@ -617,8 +621,6 @@ export default function BTCWallet() {
               <Text>No wallet address set</Text>
             </Card>
           )}
-
-          <br />
 
           <Card title=" Sats Converter">
             <Input value={satsAmount} onChange={handleSatsInputChange} placeholder="Enter amount" label="Amount in Satoshis" autoComplete="off" style={{ width: '100%', maxWidth: '42ch', marginBottom: '1ch' }} />

@@ -63,6 +63,7 @@ This update includes significant changes focusing on a Bitcoin wallet implementa
 -   Added several new themes with light/dark mode variations:
     -   `theme-black-pink`: A light and dark theme with a pinkish-violet accent.
     -   `theme-orange`: An orange theme with light and dark variants
+    -   `theme-slate`: A monochrome theme with light and dark variants
 -   Themes are automatically applied based on the user's system preference for light/dark mode.
 
 ## Getting Started
